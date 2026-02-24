@@ -10,7 +10,17 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOriginEnv = process.env.CORS_ORIGIN || "";
+const allowedOrigins = corsOriginEnv
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -21,6 +31,10 @@ app.use("/api/tasks", require("./routes/taskRoutes"));
 // Basic route for testing
 app.get("/", (req, res) => {
     res.send("API is running...");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ ok: true });
 });
 
 // Error handling middleware (optional but recommended)
