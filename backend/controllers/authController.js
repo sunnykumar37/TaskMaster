@@ -60,6 +60,45 @@ const loginUser = async (req, res) => {
     }
 };
 
+// @desc    Get current user profile
+// @route   GET /api/users/me
+// @access  Private
+const getProfile = async (req, res) => {
+    if (!req.user) {
+        res.status(401).json({ message: "Not authorized" });
+        return;
+    }
+
+    res.json(req.user);
+};
+
+// @desc    Update current user profile
+// @route   PUT /api/users/me
+// @access  Private
+const updateProfile = async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+    }
+
+    const { name, email, password } = req.body;
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (password) user.password = password;
+
+    const updatedUser = await user.save();
+
+    res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        token: generateToken(updatedUser._id),
+    });
+};
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -70,4 +109,6 @@ const generateToken = (id) => {
 module.exports = {
     registerUser,
     loginUser,
+    getProfile,
+    updateProfile,
 };

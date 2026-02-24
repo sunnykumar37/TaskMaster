@@ -19,7 +19,10 @@ const Navbar = () => {
             <div className="flex items-center gap-8">
                 {user ? (
                     <>
-                        <div className="flex flex-col items-end mr-2">
+                <div
+                    className="flex flex-col items-end mr-2 cursor-pointer"
+                    onClick={() => navigate("/profile")}
+                >
                             <span className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Authenticated</span>
                             <span className="text-white font-semibold text-sm">{user.name}</span>
                         </div>
